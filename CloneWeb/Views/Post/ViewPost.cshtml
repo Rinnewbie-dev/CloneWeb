@@ -96,7 +96,7 @@
            
         });
         function fbshareCurrentPage() {
-           window.open.href="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.href);
+           window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.href) );
             return false;
         }
         function CommentPost(Comment, PostId) {
@@ -117,10 +117,18 @@
                             method: "GET",
                             success: function (data) {
                                 $("#list-comment").html("");
-                                $("#commentsmessage").val("");
                                 $("#list-comment").html(data);
                             }
                         });
+                        //$.ajax({
+                        //    url: "@Url.Action("ListRecentComment")",
+                        //    method: "GET",
+                        //    success: function (data) {
+                        //        $("#list-recent-comment").html("");
+                        //        $("#list-recent-comment").html(data);
+                        //    }
+                        //});
+                        $("#commentsmessage").val("");
                     }
                     else {
                         alert("HUhuhu");

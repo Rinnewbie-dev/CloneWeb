@@ -160,5 +160,9 @@ namespace CloneWeb.Controllers
         {
             return ViewComponent("ListComments", new { PostId = PostId });
         }
+        public IActionResult ReloadRecentComment(Guid? PostId)
+        {
+            return ViewComponent("ListRecentComment");
+        }
     }
 }

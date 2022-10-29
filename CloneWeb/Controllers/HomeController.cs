@@ -39,6 +39,7 @@ namespace CloneWeb.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         [HttpPost]
+        [Obsolete]
         public IActionResult UploadImage(List<IFormFile> files)
         {
 

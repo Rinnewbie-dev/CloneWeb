@@ -10,8 +10,8 @@
 <div class="entry">
     <p>The page you requested could not be found. Perhaps searching will help.</p>
     <div class="search-box">
-        <form id="frmSearch" method="get" action="https://kienmanowar.wordpress.com/">
-            <input type="text" size="15" class="search-field" name="s" id="s" placeholder="Search this site"><input type="submit" value="" class="search-go">
+        <form id="frmSearch" method="post" asp-controller="Post" asp-action="SearchPost">
+            <input type="text" size="15" class="search-field" name="KeyWord" id="KeyWord" placeholder="Search this site"><input type="submit" value="" class="search-go">
         </form>
     </div>
 </div>

@@ -33,6 +33,7 @@ namespace CloneWeb.Views.ViewComponents
                               CreateTime = db.CreateTime,
                               CommentMessage = db.CommentMessage,
                               AvatarUrl = u.ImageUrl,
+
                           }).OrderBy(x=>x.CreateTime).Take(3).ToList();
             return Task.FromResult(result);
         }
