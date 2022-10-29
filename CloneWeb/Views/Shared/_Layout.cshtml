@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+
+</head>
+<body class="body">
+    <div id="wrapper">
+        <div id="page">
+            <div class="menu-header">
+                <ul>
+                    <li> <a href="#">Home </a> </li>
+                    <li> @Html.ActionLink("About","Index","About") </li>
+                    <li> <a href="#">R4ndom’s Beginning Reverse Engineering Tutorials </a> </li>
+                    <li> <a href="#">Slugsnack’s Reversing Series by c0lo </a> </li>
+                </ul>
+            </div>
+            <div id="header" role="banner">
+                <h1>0day in {REA_TEAM}</h1>
+                <div class="description"></div>
+                <div class="rss"></div>
+            </div>
+            <hr style="display:none" />
+
+            <div id="container">
+                <div id="sidebar" role="complementary">
+                    <ul>
+                        <li id="search">
+                            <h2 class="sidebartitle">Tìm kiếm</h2>
+                            <div class="search-box">
+                                <form id="frmSearch" method="post" asp-controller="Post" asp-action="SearchPost">
+                                    <input type="text" size="15" class="search-field" name="KeyWord" id="KeyWord" placeholder="Search this site"><input type="submit" value="" class="search-go">
+                                </form>
+                            </div>
+                        </li>
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">Recent Posts</h2>
+
+                            @await Component.InvokeAsync("ListRecentPost")
+
+                        </li>
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">Recent Comments</h2>
+                            @await Component.InvokeAsync("ListRecentComment")
+                        </li>
+                        @* <li id="recent-post">
+                        <h2 class="sidebartitle">Pages</h2>
+                        @await Component.InvokeAsync("ListPages")
+                        </li>*@
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">Categories</h2>
+                            @await Component.InvokeAsync("ListCategory")
+                        </li>
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">Top post</h2>
+                            @await Component.InvokeAsync("ListRecentPost")
+                        </li>
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">List Post </h2>
+                            @await Component.InvokeAsync("ListRecentPost")
+                        </li>
+                        <li id="recent-post">
+                            <h2 class="sidebartitle">Statistics</h2>
+                            @await Component.InvokeAsync("TotalVisit")
+
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="content" role="main">
+                    <div class="column">
+                        @RenderBody()
+                    </div>
+                </div>
+                <div id="footer" role="contentinfo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-bott">
+        <a href="https://www.facebook.com/rin2709">Coppy right © by Rin</a>
+    </div>
+    <div class="footerbar">
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/onlinecount.js"></script>
+
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

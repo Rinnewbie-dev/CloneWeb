@@ -1,0 +1,12 @@
+﻿@using EntityDataModel.Models;
+@model List<Category>
+
+@foreach (var item in Model)
+{
+    <ul>
+        <li>
+            <a href="#">@item.Title</a>
+        </li>
+       
+    </ul>
+}

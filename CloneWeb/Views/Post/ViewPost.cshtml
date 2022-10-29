@@ -1,0 +1,135 @@
+﻿@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Type"] = "Post";
+    string href = String.Concat(ViewBag.DomainUrl, "Post/ViewPost/?PostId=" + Model.PostId);
+
+}
+@using ViewModel.ResultViewModel
+@model PostResultViewModel;
+
+@Html.HiddenFor(x=>x.PostId)
+<div class="row">
+    <div class="posttitle">
+        <h2 class="pagetitle"> @Model.Title  </h2>
+    </div>
+
+    <div class="postcomments">
+        <a href="#comments">@Model.TotalComments</a>
+    </div>
+
+
+    <small>
+        Posted: @String.Format("{0,0:D}", Model.CreateTime) in
+        @Html.ActionLink(Model.CategoryName,"Index" , "Home")
+        <br>
+        @if (Model.PostTag.Count > 0)
+        {
+            @Html.Label("Tags:")
+            @foreach (var item in Model.PostTag)
+            {
+                @Html.ActionLink(item.Title + ", ","Index" , "Home")
+            }
+        }
+
+
+    </small>
+
+    <div class="entry" style="width:100%">
+            @Html.Raw(Model.PostInfomation)
+    </div>
+
+</div>
+
+<div class="share-post">
+    <h3 class="share-title">Share this:</h3>
+    <div>
+        <div id="btnshare" class="btn btn-dark">
+            Share
+        </div>
+    </div>
+
+</div>
+<div class="related-posts">
+    <h3 class="share-title">Related</h3>
+    <div class="related-item">
+    </div>
+</div>
+
+<div id="comments">
+    Comments
+</div>
+
+<div id="list-comment">
+    @await Component.InvokeAsync("ListComments",new {PostId =  Model.PostId })
+</div>
+
+<div id="respondcon">
+    <h3 class="reply-title">Leave a Reply </h3>
+    <div class="comments-message">
+        <input class="form-control mb-2" id="commentsmessage" placeholder="Enter comment here" />
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-secondary " id="addcomments">Comment</button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+           
+            $("#addcomments").on("click", function () {
+                var Comment = $("#commentsmessage").val();
+                var PostId = $("#PostId").val();
+                CommentPost(Comment, PostId);
+            });
+            $("#commentsmessage").on('keyup', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    var Comment = $("#commentsmessage").val();
+                    var PostId = $("#PostId").val();
+                    CommentPost(Comment, PostId);
+                }
+            });
+            $("#btnshare").on("click",function (){
+                fbshareCurrentPage();
+            })
+           
+        });
+        function fbshareCurrentPage() {
+           window.location.href="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.href);
+            return false;
+        }
+        function CommentPost(Comment, PostId) {
+            $.ajax({
+                type: "POST",
+                url: "/Post/AddComment",
+                data: {
+                    Comment: Comment,
+                    PostId: PostId
+                },
+                dataType: "json",
+                success: function (jsonData) {
+                    if (jsonData.statusCode = "200") {
+                        //load lại list comment
+                        $.ajax({
+                            url: "@Url.Action("ReloadComment")",
+                            data: { PostId: PostId },
+                            method: "GET",
+                            success: function (data) {
+                                $("#list-comment").html("");
+                                $("#commentsmessage").val("");
+                                $("#list-comment").html(data);
+                            }
+                        });
+                    }
+                    else {
+                        alert("HUhuhu");
+                    }
+                },
+                error: function () {
+                    alert('error!');
+                }
+            });
+        }
+    </script>
+}

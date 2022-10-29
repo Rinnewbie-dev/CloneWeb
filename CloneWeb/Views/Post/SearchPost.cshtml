@@ -1,0 +1,44 @@
+﻿@using ViewModel.ResultViewModel
+@model List<PostResultViewModel>;
+
+@{
+    ViewData["Title"] = "Search post";
+}
+
+<h2 style="border-bottom : 1px dashed #575b59; font-size : 25px">Search Results</h2>
+@foreach (var item in Model)
+{
+    string href = String.Concat(ViewBag.DomainUrl, "Post/ViewPost/?PostId=" + item.PostId);
+    <div class="row">
+        <div class="posttitle">
+            <h2 href=@href class="pagetitle"> @item.Title  </h2>
+        </div>
+
+        <div class="postcomments">
+            <a href="#comments">@item.TotalComments</a>
+        </div>
+
+        <small>
+            Posted: @String.Format("{0,0:D}", item.CreateTime) in
+            @Html.ActionLink(item.CategoryName,"Index" , "Home")
+            <br>
+            @if (item.PostTag.Count > 0)
+            {
+                @Html.Label("Tags:")
+                @foreach (var itemtag in item.PostTag)
+                {
+                    @Html.ActionLink(itemtag.Title + ", ","Index" , "Home")
+                }
+            }
+        </small>
+
+        <div class="entry" style="width:100% ;">
+
+            <div id="htmlcode">
+                @Html.Raw(item.PostInfomation)
+            </div>
+
+        </div>
+
+    </div>
+}

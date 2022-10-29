@@ -1,0 +1,13 @@
+﻿@using EntityDataModel.Models;
+@model List<Post>
+
+
+@foreach (var item in Model)
+{
+    string href = String.Concat(ViewBag.DomainUrl, "Post/ViewPost/?PostId=" + item.PostId);
+    <ul>
+        <li>
+            <a href= @href>  @item.Title</a>
+        </li>
+    </ul>
+}
