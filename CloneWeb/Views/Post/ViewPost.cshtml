@@ -2,7 +2,7 @@
     ViewData["Title"] = Model.Title;
     ViewData["Type"] = "Post";
     string href = String.Concat(ViewBag.DomainUrl, "Post/ViewPost/?PostId=" + Model.PostId);
-
+    var claimns = User?.Identities.First().Claims.ToList();
 }
 @using ViewModel.ResultViewModel
 @model PostResultViewModel;
@@ -66,10 +66,20 @@
 <div id="respondcon">
     <h3 class="reply-title">Leave a Reply </h3>
     <div class="comments-message">
-        <input class="form-control mb-2" id="commentsmessage" placeholder="Enter comment here" />
-        <div class="d-flex justify-content-end">
-            <button class="btn btn-secondary " id="addcomments">Comment</button>
-        </div>
+        @if (claimns.Count <= 0)
+        {
+            <div>
+                <p style="font-size : 10px"> Please login to comment </p>
+            </div>
+        }
+        else
+        {
+            <input class="form-control mb-2" id="commentsmessage" placeholder="Enter comment here" />
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-secondary " id="addcomments">Comment</button>
+            </div>
+        }
+       
     </div>
 </div>
 

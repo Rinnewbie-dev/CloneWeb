@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var claimns = User?.Identities.First().Claims.ToList();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,12 +26,19 @@
                 </div>
                 <div class="float-right">
                     <ul>
-                        <li>   @Html.ActionLink("Create Post","CreatePost","Post") </li>
-                        @*<li> @Html.ActionLink("About","Index","About") </li>*@
-                        @*  <li> <a href="#">R4ndom’s Beginning Reverse Engineering Tutorials </a> </li>
-                        <li> <a href="#">Slugsnack’s Reversing Series by c0lo </a> </li>*@
+                        
+                        @if (claimns.Count <= 0 )
+                        {
+                            <li> @Html.ActionLink("Login","Login","Authentication") </li>
+                            <li> @Html.ActionLink("Register","Register","Authentication") </li>
+                        }
+                        else
+                        {
+                            <li> @Html.ActionLink("Create Post","CreatePost","Post") </li>
+                            <li> @Html.ActionLink("Logout","Logout","Authentication") </li>
+                        }
                     </ul>
-               </div>
+                </div>
             </div>
             <div id="header" role="banner">
                 <h1>0day in {REA_TEAM}</h1>

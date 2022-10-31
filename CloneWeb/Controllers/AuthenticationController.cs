@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CloneWeb.Controllers
@@ -36,21 +38,22 @@ namespace CloneWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _context.User.Where(x => x.UserName == objLoginModel.UserName && x.Password == objLoginModel.Password).FirstOrDefault();
+                var pashMD5 = GetMd5Sum(objLoginModel.Password);
+                var user = _context.User.Where(x => x.UserName == objLoginModel.UserName && x.Password == pashMD5).FirstOrDefault();
                 if (user != null)
                 {
-                    //A claim is a statement about a subject by an issuer and    
-                    //represent attributes of the subject that are useful in the context of authentication and authorization operations.
+                    if (string.IsNullOrEmpty(objLoginModel.ReturnUrl))
+                    {
+                        objLoginModel.ReturnUrl = "/";
+                    }
+                    
                     var claims = new List<Claim>() {
                         new Claim("UserId", user.UserId.ToString()),
                         new Claim(ClaimTypes.Name, user.UserName),
                         new Claim(ClaimTypes.Role, user.Role),
                     };
-                    //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
                     var principal = new ClaimsPrincipal(identity);
-                    //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
                     {
                         IsPersistent = objLoginModel.RememberMe
@@ -65,14 +68,54 @@ namespace CloneWeb.Controllers
             }
             return View(objLoginModel);
         }
+        [AllowAnonymous]
+        public IActionResult Register(string ReturnUrl = "")
+        {
 
+            LoginModel objLoginModel = new LoginModel();
+            objLoginModel.ReturnUrl = ReturnUrl;
+            return View(objLoginModel);
+        }
+        #region GetRedirectUrl
+        private string GetRedirectUrl(string returnUrl)
+        {
+            if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                return Url.Action("Index", "Home");
+            }
+
+            return returnUrl;
+        }
+        #endregion GetRedirectUrl
         public async Task<IActionResult> LogOut()
         {
-            //SignOutAsync is Extension method for SignOut    
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            //Redirect to home page    
             return LocalRedirect("/");
         }
+        public string GetMd5Sum(string str)
+        {
+          
 
+            Encoder enc = System.Text.Encoding.Unicode.GetEncoder();
+            byte[] unicodeText = new byte[str.Length * 2];
+
+            enc.GetBytes(str.ToCharArray(), 0, str.Length, unicodeText, 0, true);
+
+
+            MD5 md5 = new MD5CryptoServiceProvider();
+
+            byte[] result = md5.ComputeHash(unicodeText);
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < result.Length; i++)
+            {
+
+                sb.Append(result[i].ToString("X2"));
+
+            }
+            // And return it
+            return sb.ToString();
+        }
     }
 }
