@@ -62,7 +62,7 @@ namespace CloneWeb.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Invalid Credential";
+                    ViewBag.Message = "Wrong username or password";
                     return View(user);
                 }
             }
