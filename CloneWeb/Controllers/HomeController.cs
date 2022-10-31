@@ -1,4 +1,5 @@
 ﻿using CloneWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ViewModel;
 using static System.Net.WebRequestMethods;
 
 namespace CloneWeb.Controllers

@@ -8,6 +8,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Identity;
+using System.Data.Entity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace CloneWeb
 {
@@ -32,6 +40,37 @@ namespace CloneWeb
 
             services.AddDbContext<EntityDataContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                       .AddCookie(options =>
+                       {
+                           options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                           options.SlidingExpiration = true;
+                           options.AccessDeniedPath = "/Forbidden/";
+                           options.LoginPath = "/Authentication/Login";
+                           options.LogoutPath = new PathString("/Authentication/Logout");
+                       });
+            //services.AddAuthentication(x =>
+            //{
+            //    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //}).AddJwtBearer(o =>
+            //{
+            //    var Key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
+            //    o.SaveToken = true;
+            //    o.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = false,
+            //        ValidateAudience = false,
+            //        ValidateLifetime = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ValidIssuer = Configuration["JWT:Issuer"],
+            //        ValidAudience = Configuration["JWT:Audience"],
+            //        IssuerSigningKey = new SymmetricSecurityKey(Key),
+            //        ClockSkew = TimeSpan.Zero
+            //    };
+            //});
+            services.AddMvc();
+            services.AddAuthorization();
             services.AddSignalR();
         }
 
@@ -52,21 +91,22 @@ namespace CloneWeb
             app.UseStaticFiles();
 
             //app.UseStatusCodePages();
-            app.UseStatusCodePagesWithRedirects("/Error/{0}");
+            app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
             //add Visitor Counter Middleware
             //app.UseMiddleware(typeof(VisitorCounterMiddleware));
             app.UseRouting();
 
+            app.UseCookiePolicy();
+            app.UseAuthentication();
             app.UseAuthorization();
 
-           
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-               
+
                 endpoints.MapHub<OnlineCountHub>("/onlinecount");
             });
         }

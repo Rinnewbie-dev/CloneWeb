@@ -1,18 +1,18 @@
 ﻿using EntityDataModel.Data;
 using EntityDataModel.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NuGet.Protocol.Core.Types;
 using System;
-using System.ComponentModel.Design;
-using System.Configuration;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using ViewModel;
 using ViewModel.Create;
 using ViewModel.ResultViewModel;
 
@@ -31,6 +31,7 @@ namespace CloneWeb.Controllers
         {
             return View();
         }
+        [Authorize]
         public IActionResult CreatePost()
         {
             var lstCategory = _context.Category.ToList();
@@ -41,13 +42,15 @@ namespace CloneWeb.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult CreatePost(PostViewModel Model)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Not a valid model");
+            var claimns = User?.Identities.First().Claims.ToList();
             Model.PostId = Guid.NewGuid();
             Model.CreateTime = DateTime.Now;
-            Model.CreateBy = Guid.Parse("14A16D89-0ABD-4235-B155-3C6977CE0A6F");
+            Model.CreateBy = Guid.Parse(claimns.Where(x => x.Type == "UserId").FirstOrDefault().Value.ToString());
 
             if (Model.PostImageUrl != null)
             {
@@ -95,10 +98,9 @@ namespace CloneWeb.Controllers
                                   PostInfomation = db.PostInfomation
                               }
                             ).FirstOrDefaultAsync();
-
             if (post == null) return NotFound();
 
-            post.TotalComments = post.PostComment.Count();
+            post.TotalComments = _context.PostComment.Where(x=>x.PostId == post.PostId).ToList().Count;
             ViewBag.PostId = PostId;
             ViewBag.PostInfomation = post.PostInfomation;
 
@@ -131,16 +133,19 @@ namespace CloneWeb.Controllers
 
             return View(post);
         }
-        public JsonResult AddComment(Guid PostId, string Comment)
+        [Authorize]
+        public IActionResult AddComment(Guid PostId, string Comment)
         {
             try
             {
+                var claimns = User?.Identities.First().Claims.ToList();
+
                 var comments = new Comments();
                 comments.CommentId = Guid.NewGuid();
                 comments.CreateTime = DateTime.Now;
                 comments.CommentMessage = Comment;
-                comments.CreateBy = Guid.Parse("14A16D89-0ABD-4235-B155-3C6977CE0A6F");
-
+                comments.CreateBy = Guid.Parse(claimns.Where(x=>x.Type == "UserId").FirstOrDefault().Value.ToString());
+                
                 var PostCmt = new PostComment();
                 PostCmt.PostId = PostId;
                 PostCmt.CommentId = comments.CommentId;

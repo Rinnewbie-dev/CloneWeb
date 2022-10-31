@@ -1,27 +1,24 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using System.Net;
+using ViewModel;
 
 namespace CloneWeb.Controllers
 {
     public class ErrorController : Controller
     {
-        [Route("Error/{0}")]
         public IActionResult Index(int? statusCode)
         {
-            var feature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-            ViewData["ErrorUrl"] = feature?.OriginalPath;
 
-            if (statusCode.HasValue)
-            {
-                if (statusCode == 404 || statusCode == 500)
-                {
-                    var viewName = statusCode.ToString();
-                    return View();
-                    //return View(viewName);
-                }
-            }
+            if (statusCode == (int)HttpStatusCode.NotFound || statusCode == (int)HttpStatusCode.InternalServerError)
+                return View();
+
+            if (statusCode == (int)HttpStatusCode.Unauthorized || statusCode == (int)HttpStatusCode.Forbidden)
+                return Redirect("/Authentication/Login");
+            
             return View();
         }
     }

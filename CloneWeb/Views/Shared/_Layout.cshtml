@@ -13,12 +13,22 @@
     <div id="wrapper">
         <div id="page">
             <div class="menu-header">
-                <ul>
-                    <li>  @Html.ActionLink("Home","Index","Home") </a> </li>
-                    <li> @Html.ActionLink("About","Index","About") </li>
-                    <li> <a href="#">R4ndom’s Beginning Reverse Engineering Tutorials </a> </li>
-                    <li> <a href="#">Slugsnack’s Reversing Series by c0lo </a> </li>
-                </ul>
+                <div>
+                    <ul>
+                        <li>  @Html.ActionLink("Home","Index","Home")  </li>
+                        <li> @Html.ActionLink("About","Index","About") </li>
+                        @*  <li> <a href="#">R4ndom’s Beginning Reverse Engineering Tutorials </a> </li>
+                        <li> <a href="#">Slugsnack’s Reversing Series by c0lo </a> </li>*@
+                    </ul>
+                </div>
+                <div class="float-right">
+                    <ul>
+                        <li>   @Html.ActionLink("Create Post","CreatePost","Post") </li>
+                        @*<li> @Html.ActionLink("About","Index","About") </li>*@
+                        @*  <li> <a href="#">R4ndom’s Beginning Reverse Engineering Tutorials </a> </li>
+                        <li> <a href="#">Slugsnack’s Reversing Series by c0lo </a> </li>*@
+                    </ul>
+               </div>
             </div>
             <div id="header" role="banner">
                 <h1>0day in {REA_TEAM}</h1>

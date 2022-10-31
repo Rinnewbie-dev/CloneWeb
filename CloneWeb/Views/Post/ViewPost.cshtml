@@ -35,7 +35,7 @@
     </small>
 
     <div class="entry" style="width:100%">
-            @Html.Raw(Model.PostInfomation)
+        @Html.Raw(Model.PostInfomation)
     </div>
 
 </div>
@@ -43,7 +43,7 @@
 <div class="share-post">
     <h3 class="share-title">Share this:</h3>
     <div>
-        <div id="btnshare" class="btn btn-dark">
+        <div id="btnshare" class="fa-share-nodes btn btn-dark ">
             Share
         </div>
     </div>
@@ -77,28 +77,30 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-           
+
             $("#addcomments").on("click", function () {
                 var Comment = $("#commentsmessage").val();
                 var PostId = $("#PostId").val();
                 CommentPost(Comment, PostId);
+
             });
             $("#commentsmessage").on('keyup', function (e) {
                 if (e.key === 'Enter' || e.keyCode === 13) {
                     var Comment = $("#commentsmessage").val();
                     var PostId = $("#PostId").val();
                     CommentPost(Comment, PostId);
+
                 }
             });
-            $("#btnshare").on("click",function (){
+            $("#btnshare").on("click", function () {
                 fbshareCurrentPage();
-            })
-           
+            });
         });
         function fbshareCurrentPage() {
-           window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.href) );
+            window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(window.location.href));
             return false;
-        }
+        };
+
         function CommentPost(Comment, PostId) {
             $.ajax({
                 type: "POST",
@@ -134,8 +136,9 @@
                         alert("HUhuhu");
                     }
                 },
-                error: function () {
-                    alert('error!');
+                error: function (respone) {
+                    console.log(respone);
+                    alert("Lỗi authorize");
                 }
             });
         }

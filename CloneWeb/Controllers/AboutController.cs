@@ -1,7 +1,6 @@
 ﻿using EntityDataModel.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
 
 namespace CloneWeb.Controllers
 {
