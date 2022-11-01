@@ -66,6 +66,10 @@ namespace EntityDataModel.Data
                 entity.Property(e => e.PostImageUrl).HasMaxLength(100);
 
                 entity.Property(e => e.Title).HasMaxLength(100);
+
+                entity.Property(e => e.Url)
+                    .HasMaxLength(500)
+                    .HasColumnName("URL");
             });
 
             modelBuilder.Entity<PostComment>(entity =>

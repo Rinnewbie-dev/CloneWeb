@@ -20,9 +20,10 @@ namespace ViewModel.ResultViewModel
         public DateTime? LastEditTime { get; set; }
         public  string CategoryName { get; set; }
         public  string PostInfomation { get; set; }
+        public  string Url { get; set; }
         public int TotalComments { get; set; }
-        public List<Tag> PostTag { get; set; }
-        public List<Comments> PostComment { get; set; }
+        public List<PostTag> PostTag { get; set; }
+        public List<Tag> Tags { get; set; }
 
     }
 }

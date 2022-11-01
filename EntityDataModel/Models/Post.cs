@@ -22,6 +22,7 @@ namespace EntityDataModel.Models
         public DateTime? LastEditTime { get; set; }
         public string PostInfomation { get; set; }
         public string PostImageUrl { get; set; }
+        public string Url { get; set; }
 
         public virtual ICollection<PostComment> PostComment { get; set; }
         public virtual ICollection<PostTag> PostTag { get; set; }

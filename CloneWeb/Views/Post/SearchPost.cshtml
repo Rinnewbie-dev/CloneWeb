@@ -22,13 +22,22 @@
             Posted: @String.Format("{0,0:D}", item.CreateTime) in
             @Html.ActionLink(item.CategoryName,"Index" , "Home")
             <br>
-            @if (item.PostTag.Count > 0)
+            @if (item.Tags.Count > 0)
             {
                 @Html.Label("Tags:")
-                @foreach (var itemtag in item.PostTag)
+
+                for (int i = 0; i < item.Tags.Count; i++)
                 {
-                    @Html.ActionLink(itemtag.Title + ", ","Index" , "Home")
+                    if (i != (item.Tags.Count - 1))
+                    {
+                        @Html.ActionLink(string.Concat(item.Tags[i].Title, ","),"Index" , "Home")
+                    }
+                    else
+                    {
+                        @Html.ActionLink(string.Concat(" ",item.Tags[i].Title),"Index" , "Home")
+                    }
                 }
+
             }
         </small>
 

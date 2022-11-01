@@ -1,16 +1,14 @@
 ﻿using EntityDataModel.Data;
 using EntityDataModel.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ViewModel;
 using ViewModel.Create;
@@ -51,7 +49,7 @@ namespace CloneWeb.Controllers
             Model.PostId = Guid.NewGuid();
             Model.CreateTime = DateTime.Now;
             Model.CreateBy = Guid.Parse(claimns.Where(x => x.Type == "UserId").FirstOrDefault().Value.ToString());
-
+            Model.Url = ToUrlSlug(Model.Title);
             if (Model.PostImageUrl != null)
             {
 
@@ -77,10 +75,12 @@ namespace CloneWeb.Controllers
             var lstPost = await _context.Post.ToListAsync();
             return View();
         }
-        public async Task<IActionResult> ViewPost(Guid PostId)
+        [Route("{Year}/{Month}/{Date}/{Url}/{PostId}")]
+        public async Task<IActionResult> ViewPost(Guid? PostId)
         {
-            var post = await (from db in _context.Post.Include(x => x.PostComment).Include(x => x.PostTag)
+            var post = await (from db in _context.Post.Include(x => x.PostTag)
                               join cate in _context.Category on db.CategoryId equals cate.CategoryId
+                              //where db.PostId == PostId
                               where db.PostId == PostId
                               select new PostResultViewModel
                               {
@@ -93,19 +93,23 @@ namespace CloneWeb.Controllers
                                   LastEditByName = _context.User.Where(x => x.UserId == db.LastEditBy).FirstOrDefault().UserName,
                                   LastEditTime = db.LastEditTime,
                                   CategoryName = cate.Title,
-                                  PostComment = _context.Comments.Where(x => x.CommentId == db.PostComment.FirstOrDefault().CommentId).ToList(),
-                                  PostTag = _context.Tag.Where(x => x.TagId == db.PostTag.FirstOrDefault().TagId).ToList(),
-                                  PostInfomation = db.PostInfomation
+                                  PostTag = db.PostTag.ToList(),
+                                  PostInfomation = db.PostInfomation,
+                                  Url = db.Url,
+                                  Tags = (from db in db.PostTag.ToList()
+                                         join tag in _context.Tag on db.TagId equals tag.TagId
+                                         select tag).ToList(),
                               }
                             ).FirstOrDefaultAsync();
             if (post == null) return NotFound();
-
+                    
             post.TotalComments = _context.PostComment.Where(x=>x.PostId == post.PostId).ToList().Count;
-            ViewBag.PostId = PostId;
+            ViewBag.PostId = post.PostId;
             ViewBag.PostInfomation = post.PostInfomation;
 
             return View(post);
         }
+       
         public async Task<IActionResult> SearchPost(string KeyWord)
         {
             ViewBag.DomainUrl = _configuration["DomainUrl"];
@@ -125,10 +129,12 @@ namespace CloneWeb.Controllers
                                   LastEditByName = _context.User.Where(x => x.UserId == db.LastEditBy).FirstOrDefault().UserName,
                                   LastEditTime = db.LastEditTime,
                                   CategoryName = c.Title,
-                                  PostComment = _context.Comments.Where(x => x.CommentId == db.PostComment.FirstOrDefault().CommentId).ToList(),
-                                  PostTag = _context.Tag.Where(x => x.TagId == db.PostTag.FirstOrDefault().TagId).ToList(),
+                                  PostTag = db.PostTag.ToList(),
                                   PostInfomation = db.PostInfomation,
-                                  TotalComments = db.PostComment.Count()
+                                  TotalComments = db.PostComment.Count(),
+                                  Tags = (from db in db.PostTag.ToList()
+                                          join tag in _context.Tag on db.TagId equals tag.TagId
+                                          select tag).ToList(),
                               }).ToListAsync();
 
             return View(post);
@@ -168,6 +174,30 @@ namespace CloneWeb.Controllers
         public IActionResult ReloadRecentComment(Guid? PostId)
         {
             return ViewComponent("ListRecentComment");
+        }
+        public static string ToUrlSlug(string value)
+        {
+
+            //First to lower case
+            value = value.ToLowerInvariant();
+
+            //Remove all accents
+            var bytes = Encoding.GetEncoding("Cyrillic").GetBytes(value);
+            value = Encoding.ASCII.GetString(bytes);
+
+            //Replace spaces
+            value = Regex.Replace(value, @"\s", "-", RegexOptions.Compiled);
+
+            //Remove invalid chars
+            value = Regex.Replace(value, @"[^a-z0-9\s-_]", "", RegexOptions.Compiled);
+
+            //Trim dashes from end
+            value = value.Trim('-', '_');
+
+            //Replace double occurences of - or _
+            value = Regex.Replace(value, @"([-_]){2,}", "$1", RegexOptions.Compiled);
+
+            return value;
         }
     }
 }

@@ -4,10 +4,16 @@
 
 @foreach (var item in Model)
 {
-    string href = String.Concat(ViewBag.DomainUrl, "Post/ViewPost/?PostId=" + item.PostId);
     <ul>
         <li>
-            <a href= @href>  @item.Title</a>
+            @Html.ActionLink(item.Title,"ViewPost","Post"
+        , new { Url = item.Url
+        , Date = ((DateTime)item.CreateTime).ToString("dd")
+        , Month =((DateTime)item.CreateTime).ToString("MM")
+        ,Year = ((DateTime)item.CreateTime).ToString("yyyy")
+        ,PostId = item.PostId}
+        )
         </li>
     </ul>
 }
+

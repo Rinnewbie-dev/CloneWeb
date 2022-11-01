@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CloneWeb
 {
@@ -103,6 +104,17 @@ namespace CloneWeb
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                //endpoints.MapControllerRoute(
+                //   name: "post",
+                //   pattern: "{CreateTime}/{Url}",
+                //   defaults: new
+                //   {
+                //       controller = "Post",
+                //       action = "ViewPost",
+                //       PostId = "PostId?"
+                //   });
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
